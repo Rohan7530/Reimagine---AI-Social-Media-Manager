@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Environment Variables (CRITICAL: Do not commit API keys)
+.env
+
+# Runtime Data & Logs
+output/
+logs/
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Project specific
+# We might want to keep the input folder structure but ignore actual files
+input/*
+!input/.gitkeep
