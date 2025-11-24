@@ -4,12 +4,13 @@ import json
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
+import asyncio
 
 # Import our backend logic
 from brain.analyzer import ContentAnalyzer
 from brain.generator import CampaignGenerator
 from models import Campaign, Post
-from server import post_to_twitter, post_to_linkedin, post_to_instagram
+from server import mcp, post_to_twitter, post_to_linkedin, post_to_instagram
 
 # Load environment variables
 load_dotenv()
@@ -78,7 +79,7 @@ def load_campaigns():
             pass
     return campaigns
 
-def main():
+async def main():
     st.sidebar.title("🚀 Amplifier")
     page = st.sidebar.radio("Navigation", ["Dashboard", "Create Campaign", "Manage Campaigns"])
 
@@ -159,15 +160,16 @@ def main():
                 col1, col2 = st.columns([1, 4])
                 with col1:
                     if st.button(f"Publish to {post.platform.value.title()}", key=f"btn_{i}"):
-                        # Call FastMCP tools directly
+                        # Call FastMCP tools directly by accessing the underlying function
                         if post.platform == "twitter":
-                            result = post_to_twitter(new_content, post.hashtags)
+                            # FastMCP tools wrap the function in .fn
+                            result = post_to_twitter.fn(content=new_content, hashtags=post.hashtags)
                         elif post.platform == "linkedin":
-                            result = post_to_linkedin(new_content, post.hashtags)
+                            result = post_to_linkedin.fn(content=new_content, hashtags=post.hashtags)
                         elif post.platform == "instagram":
-                            result = post_to_instagram(new_content, "image_placeholder.jpg", post.hashtags)
+                            result = post_to_instagram.fn(caption=new_content, image_path="image_placeholder.jpg", hashtags=post.hashtags)
                         
                         st.success(result)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
